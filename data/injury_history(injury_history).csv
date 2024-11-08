@@ -1,0 +1,22 @@
+Player.ID,Name,Group.Id,Injury Type,Body Part,Side,Injury Date,Severity,Recovery Time (days),Additional Notes
+101,Jordan Matthews,201,Muscle Strain,Quadriceps,Right,12/5/2023,Grade 2,51,"Grade 2 quadriceps strain with partial tearing of muscle fibers. Moderate pain and swelling observed, with difficulty in leg extension."
+101,Jordan Matthews,201,Tendonitis,Wrist,Left,10/25/2023,NA,11,De Quervain's tenosynovitis. Swelling and pain in wrist tendons. Prescribed rest and a wrist splint.
+101,Jordan Matthews,201,Tendonitis,Shoulder,Right,7/22/2023,NA,12,Rotator cuff tendonitis due to overuse. Anti-inflammatory treatment and physical therapy required.
+103,Malik Robinson,203,Strain,Groin,Right,6/28/2023,Grade 1,20,"Grade 1 groin strain, characterized by mild overstretching of the muscle"
+103,Malik Robinson,203,Fracture,Wrist,Left,2/14/2023,NA,68,Distal radius fracture. Cast applied. Recovery time extended due to bone displacement.
+103,Malik Robinson,203,Concussion,Head,NA,9/27/2023,Grade 1,11,Grade 1 concussion following a collision. Symptoms include dizziness and headache. Cleared for light training.
+105,Noah Bradley,205,Tendonitis,Lower Back,NA,1/13/2023,NA,17,Chronic lower back tendonitis. Advised to avoid heavy lifting and maintain a posture correction routine.
+105,Noah Bradley,205,Concussion,Head,NA,12/19/2023,Grade 2,15,"Grade 2 concussion resulting from a moderate impact to the head. Symptoms include confusion, dizziness, and headache, with no loss of consciousness."
+105,Noah Bradley,205,Soreness,Lower Back,NA,9/20/2023,NA,5,"Athlete reports mild to moderate lower back soreness, likely due to overuse. Symptoms include stiffness and discomfort, especially after prolonged sitting or physical activity."
+106,Lennon Van,206,Dislocation,Knee,Right,1/1/2024,NA,44,Patellar dislocation. The kneecap was relocated successfully. Strengthening of the quadriceps recommended.
+107,Cameron Howard,207,Sprain,Knee,Right,12/21/2023,Grade 2,42,"Grade 2 sprain of the anterior cruciate ligament (ACL) with partial ligament tear. Patient experiences moderate knee instability, swelling, and pain, especially during weight-bearing activities."
+109,Miles Richardson,209,Tendonitis,Shoulder,Right,7/5/2023,NA,9,Rotator cuff tendonitis due to overuse. Anti-inflammatory treatment and physical therapy required.
+110,Kyle Saunders,210,Fracture,Ankle,Left,10/9/2023,NA,110,Ankle fracture requiring surgical fixation. Post-op rehabilitation is planned.
+112,Anthony Lopez,212,Strain,Knee,Left,1/26/2023,Grade 1,28,"Strain of the posterior cruciate ligament (PCL), causing pain and mild swelling in the back of the knee. Patient reports discomfort during bending or straightening the leg, with reduced stability."
+112,Anthony Lopez,212,Muscle Strain,Quadriceps,Left,11/18/2023,Grade 1,12,Grade 1 quadriceps strain. Minor tear in the muscle fibers. Full recovery expected with rest.
+112,Anthony Lopez,212,Concussion,Head,NA,7/15/2023,Grade 1,11,Grade 1 concussion following a collision. Symptoms include dizziness and headache. Cleared for light training.
+114,Julian Simmons,214,Fracture,Foot,Left,2/25/2023,NA,76,Player sustained a navicular bone fracture.
+114,Julian Simmons,214,Pain,Foot,Left,10/1/2023,NA,40,Player has a calcaneal spur.
+115,Brandon Mitchell,215,Sprain,Knee,Right,1/2/2023,Grade 2,55,Grade 2 knee sprain. Partial tear of the medial collateral ligament (MCL). Brace recommended with physical therapy.
+115,Brandon Mitchell,215,Strain,Hamstring,Left,4/24/2023,Grade 1,10,"Grade 1 hamstring strain, involving minimal tearing of muscle fibers"
+115,Brandon Mitchell,215,Sprain,Knee,Left,6/26/2023,Grade 3,150,Complete tear of the posterior cruciate ligament (PCL) and anterior cruciate ligament (ACL)

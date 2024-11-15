@@ -1,8 +1,10 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import root_mean_squared_error
 
 injury_history_raw = pd.read_csv("data/injury_history(injury_history).csv", sep = ",", encoding = 'ISO-8859-1')
 muscle_imbalance_raw = pd.read_csv("data/injury_history(muscle_imbalance_data).csv", sep = ",", encoding = 'ISO-8859-1')
@@ -34,14 +36,6 @@ distinct_obt['Additional Notes'].fillna("Not Injured", inplace = True)
 distinct_obt['injury_number'].fillna(0, inplace = True)
 distinct_obt['Injury Date'] = pd.to_datetime(distinct_obt['Injury Date'])
 distinct_obt['Session_Date'] = pd.to_datetime(distinct_obt['Session_Date'])
-distinct_obt['injury_timeline'] = distinct_obt.apply(
-     lambda row: 'before injury' if row['Session_Date'] < row['Injury Date'] else 'after injury',
-    axis=1
-)
-distinct_obt['days_before_injury'] = distinct_obt.apply(
-     lambda row: row['Injury Date'] - row['Session_Date'] if row['Injury Date'] != "2026-12-31" else 999,
-    axis=1
-)
 distinct_obt.loc[distinct_obt['Injury Type'] == "Not Injured", 'Severity'] = distinct_obt.loc[distinct_obt['Injury Type'] == "Not Injured", 'Severity'].fillna("Grade 0")
 distinct_obt.loc[distinct_obt['Injury Type'] == "Not Injured", 'Side'] = distinct_obt.loc[distinct_obt['Injury Type'] == "Not Injured", 'Side'].fillna("No Injury")
 
@@ -61,3 +55,55 @@ columns_to_drop = [
 for column in columns_to_drop:
     if column in clean_sorted_obt.columns:
         clean_sorted_obt.drop(columns = column, inplace = True)
+
+columns_to_choose = [
+    'Injury Type', 
+    'Body Part', 
+    'Severity', 
+    'Recovery Time (days)']
+
+model3_df = clean_sorted_obt[columns_to_choose]
+
+model3_predictors = model3_df.drop(columns = 'Recovery Time (days)')
+model3_target = model3_df['Recovery Time (days)']
+
+ohe = OneHotEncoder(sparse_output = False, drop = None)
+ohe_model3_predictors = ohe.fit_transform(model3_predictors)
+ohe_model3_predictor_df = pd.DataFrame(ohe_model3_predictors, columns=list(ohe.get_feature_names_out()))
+ohe_model3_predictors = ohe_model3_predictor_df.drop(columns = ['Injury Type_Not Injured', 'Body Part_None', 'Severity_Grade 0'])
+
+rfr = RandomForestRegressor(n_estimators = 600)
+x_train, x_test, y_train, y_test = train_test_split(ohe_model3_predictors, model3_target, train_size = 0.7, random_state=999999)
+cv_score = np.mean(cross_val_score(rfr, x_train, y_train, cv = 3, scoring = 'neg_root_mean_squared_error'))
+
+rfr_model = rfr.fit(x_train, y_train)
+rfr_pred = rfr_model.predict(x_test)
+accuracy = root_mean_squared_error(y_test, rfr_pred)
+
+st.title("Welcome back Coach")
+st.header("Let's figure out how long your player is going to be out for")
+st.text("Share the injury type of your player, the body part they injured, and how severe this injury is.")
+
+injury_type = st.selectbox('Injury Type', ['Muscle Strain', 'Strain', 'Sprain'], index = None)
+body_part = st.selectbox('Body Part', ['Quadriceps', 'Knee', 'Groin', 'Hamstring'], index = None)
+severity = st.selectbox('Severity', ['Grade 1', 'Grade 2', 'Grade 3'], index = None)
+
+if injury_type and body_part and severity:
+    dict = {'Injury Type' : [injury_type],
+          'Body Part' : [body_part],
+          'Severity' : [severity]}
+    
+    df = pd.DataFrame(dict, index = None)
+
+    ohe_data = ohe.transform(df)
+    ohe_df = pd.DataFrame(ohe_data, columns=list(ohe.get_feature_names_out()))
+    #missing_col = set(ohe_model3_predictors.columns) - set(ohe_df.columns)
+    #ohe_df[list(missing_col)].fillna(0)
+
+    ohe_predictors = ohe_df.drop(columns = ['Injury Type_Not Injured', 'Body Part_None', 'Severity_Grade 0'])
+
+
+    new_pred = rfr_model.predict(ohe_predictors)
+    st.write(f'Based on the data you have provided, I am estimating this player to be out for about {new_pred[0]} days')
+
+    

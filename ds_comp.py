@@ -80,7 +80,7 @@ accuracy = root_mean_squared_error(y_test, rfr_pred)
 
 st.title("Welcome back Coach")
 st.header("Let's figure out how long your player is going to be out for")
-st.text("Share the injury type of your player, the body part they injured, and how severe this injury is.")
+st.text("Share the injury type of your player, the body part they injured (More data needs to be collected on Severity of Injury)")
 
 injury_type = st.selectbox('Injury Type', ['Muscle Strain', 'Strain', 'Sprain', 'Tendonitis', 'Fracture', 'Concussion', 'Soreness', 'Pain'], index = None)
 body_part = st.selectbox('Body Part', ['Quadriceps', 'Knee', 'Groin', 'Hamstring', 'Shoulder', 'Wrist', 'Head', 'Lower Back', 'Ankle', 'Foot'], index = None)

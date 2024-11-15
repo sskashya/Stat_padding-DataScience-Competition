@@ -21,13 +21,13 @@ muscle_imbalance_raw['Month'] = pd.to_datetime(muscle_imbalance_raw['Date Record
 muscle_imbalance_raw['Year'] = pd.to_datetime(muscle_imbalance_raw['Date Recorded']).dt.year
 
 injury_history_raw.sort_values(['Player.ID', 'Injury Date', 'Month', 'Year'], inplace = True)
-injury_history_raw['injury_number'] = injury_history_raw.groupby('Player.ID').cumcount() + 1
+injury_history_raw['injury_number'] = injury_history_raw.groupby(['Player.ID', 'Body Part']).cumcount() + 1
 injury_history_raw.sort_index(inplace = True)
 
 twothird_data = pd.merge(muscle_imbalance_raw, player_sessions_raw, on = ['Player.ID', 'Month', 'Year'], how = 'right')
 obt = pd.merge(twothird_data, injury_history_raw, on = ['Player.ID', 'Month', 'Year'], how = 'left')
 
-distinct_obt = obt.drop(columns = ['Group.name', 'League.ID', 'Name_y', 'Group.Id_y', 'Name_x'])
+distinct_obt = obt.drop(columns = ['Group.name', 'League.ID', 'Name_y', 'Group.Id_y', 'Name_x', 'Severity', 'Side'])
 distinct_obt['Injury Type'].fillna("Not Injured", inplace=True)
 distinct_obt['Body Part'].fillna("None", inplace = True)
 distinct_obt['Injury Date'].fillna("12/31/2026", inplace = True)
@@ -36,8 +36,6 @@ distinct_obt['Additional Notes'].fillna("Not Injured", inplace = True)
 distinct_obt['injury_number'].fillna(0, inplace = True)
 distinct_obt['Injury Date'] = pd.to_datetime(distinct_obt['Injury Date'])
 distinct_obt['Session_Date'] = pd.to_datetime(distinct_obt['Session_Date'])
-distinct_obt.loc[distinct_obt['Injury Type'] == "Not Injured", 'Severity'] = distinct_obt.loc[distinct_obt['Injury Type'] == "Not Injured", 'Severity'].fillna("Grade 0")
-distinct_obt.loc[distinct_obt['Injury Type'] == "Not Injured", 'Side'] = distinct_obt.loc[distinct_obt['Injury Type'] == "Not Injured", 'Side'].fillna("No Injury")
 
 clean_obt = distinct_obt.dropna()
 clean_sorted_obt = clean_obt.sort_values(['Player.ID', 'Session ID', 'Date Recorded', 'Session.ID', 'Session_Date', 'Injury Date'])
@@ -59,7 +57,6 @@ for column in columns_to_drop:
 columns_to_choose = [
     'Injury Type', 
     'Body Part', 
-    'Severity', 
     'Recovery Time (days)']
 
 model3_df = clean_sorted_obt[columns_to_choose]
@@ -73,6 +70,7 @@ ohe_model3_predictor_df = pd.DataFrame(ohe_model3_predictors, columns=list(ohe.g
 ohe_model3_predictors = ohe_model3_predictor_df.drop(columns = ['Injury Type_Not Injured', 'Body Part_None', 'Severity_Grade 0'])
 
 rfr = RandomForestRegressor(n_estimators = 600)
+ohe_model3_predictors['injury_number'] = clean_sorted_obt['injury_number']
 x_train, x_test, y_train, y_test = train_test_split(ohe_model3_predictors, model3_target, train_size = 0.7, random_state=999999)
 cv_score = np.mean(cross_val_score(rfr, x_train, y_train, cv = 3, scoring = 'neg_root_mean_squared_error'))
 
@@ -86,12 +84,12 @@ st.text("Share the injury type of your player, the body part they injured, and h
 
 injury_type = st.selectbox('Injury Type', ['Muscle Strain', 'Strain', 'Sprain'], index = None)
 body_part = st.selectbox('Body Part', ['Quadriceps', 'Knee', 'Groin', 'Hamstring'], index = None)
-severity = st.selectbox('Severity', ['Grade 1', 'Grade 2', 'Grade 3'], index = None)
+frequency = st.select_slider('Frequency', [1, 2, 3, 4], index = None)
 
-if injury_type and body_part and severity:
+if injury_type and body_part and frequency:
     dict = {'Injury Type' : [injury_type],
           'Body Part' : [body_part],
-          'Severity' : [severity]}
+          'Frequency' : [frequency]}
     
     df = pd.DataFrame(dict, index = None)
 
@@ -100,7 +98,7 @@ if injury_type and body_part and severity:
     #missing_col = set(ohe_model3_predictors.columns) - set(ohe_df.columns)
     #ohe_df[list(missing_col)].fillna(0)
 
-    ohe_predictors = ohe_df.drop(columns = ['Injury Type_Not Injured', 'Body Part_None', 'Severity_Grade 0'])
+    ohe_predictors = ohe_df.drop(columns = ['Injury Type_Not Injured', 'Body Part_None'])
 
 
     new_pred = rfr_model.predict(ohe_predictors)

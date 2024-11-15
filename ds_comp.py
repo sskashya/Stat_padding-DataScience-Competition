@@ -67,10 +67,10 @@ model3_target = model3_df['Recovery Time (days)']
 ohe = OneHotEncoder(sparse_output = False, drop = None)
 ohe_model3_predictors = ohe.fit_transform(model3_predictors)
 ohe_model3_predictor_df = pd.DataFrame(ohe_model3_predictors, columns=list(ohe.get_feature_names_out()))
-ohe_model3_predictors = ohe_model3_predictor_df.drop(columns = ['Injury Type_Not Injured', 'Body Part_None', 'Severity_Grade 0'])
+ohe_model3_predictors = ohe_model3_predictor_df.drop(columns = ['Injury Type_Not Injured', 'Body Part_None'])
 
 rfr = RandomForestRegressor(n_estimators = 600)
-ohe_model3_predictors['injury_number'] = clean_sorted_obt['injury_number']
+#ohe_model3_predictors['injury_number'] = clean_sorted_obt['injury_number']
 x_train, x_test, y_train, y_test = train_test_split(ohe_model3_predictors, model3_target, train_size = 0.7, random_state=999999)
 cv_score = np.mean(cross_val_score(rfr, x_train, y_train, cv = 3, scoring = 'neg_root_mean_squared_error'))
 
@@ -82,14 +82,13 @@ st.title("Welcome back Coach")
 st.header("Let's figure out how long your player is going to be out for")
 st.text("Share the injury type of your player, the body part they injured, and how severe this injury is.")
 
-injury_type = st.selectbox('Injury Type', ['Muscle Strain', 'Strain', 'Sprain'], index = None)
-body_part = st.selectbox('Body Part', ['Quadriceps', 'Knee', 'Groin', 'Hamstring'], index = None)
-frequency = st.select_slider('Frequency', [1, 2, 3, 4], index = None)
+injury_type = st.selectbox('Injury Type', ['Muscle Strain', 'Strain', 'Sprain', 'Tendonitis', 'Fracture', 'Concussion', 'Soreness', 'Pain'], index = None)
+body_part = st.selectbox('Body Part', ['Quadriceps', 'Knee', 'Groin', 'Hamstring', 'Shoulder', 'Wrist', 'Head', 'Lower Back', 'Ankle', 'Foot'], index = None)
+#frequency = st.select_slider('Frequency', [0, 1, 2, 3, 4])
 
-if injury_type and body_part and frequency:
+if injury_type and body_part: #and frequency:
     dict = {'Injury Type' : [injury_type],
-          'Body Part' : [body_part],
-          'Frequency' : [frequency]}
+          'Body Part' : [body_part]}
     
     df = pd.DataFrame(dict, index = None)
 
@@ -99,9 +98,9 @@ if injury_type and body_part and frequency:
     #ohe_df[list(missing_col)].fillna(0)
 
     ohe_predictors = ohe_df.drop(columns = ['Injury Type_Not Injured', 'Body Part_None'])
-
+    #ohe_predictors['injury_number'] = frequency
 
     new_pred = rfr_model.predict(ohe_predictors)
-    st.write(f'Based on the data you have provided, I am estimating this player to be out for about {new_pred[0]} days')
+    st.write(f'Based on the data you have provided, I am estimating this player to be out for about {round(new_pred[0])} days')
 
     
